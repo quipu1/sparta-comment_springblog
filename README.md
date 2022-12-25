@@ -4,17 +4,18 @@
 
 ## 💡 Introduce
 
-> 22.12.15 ~ 22.12.16
+> 22.12.19 ~ 22.12.21
 
 Spring으로 로그인 기능이 추가된 블로그를 구현합니다.
 
-* 회원가입
-* 로그인
-
+* 회원가입 / 로그인
 * 전체 게시글 목록 조회
 * (회원) 게시글 작성
 * (회원) 선택한 게시글 조회
 * (작성자) 선택한 게시글 수정, 삭제
+* (회원) 댓글 조회, 작성
+* (작성자) 선택한 댓글 수정, 삭제
+* 예외처리
 
 
 
@@ -41,9 +42,7 @@ Spring으로 로그인 기능이 추가된 블로그를 구현합니다.
 
 ## 📌 ERD
 
-![image-20221219170525616](README.assets/image-20221219170525616.png)
-
-
+![image-20221222114147043](README.assets/image-20221222114147043.png)
 
 <br>
 
@@ -51,15 +50,19 @@ Spring으로 로그인 기능이 추가된 블로그를 구현합니다.
 
 ## 📃 API 명세
 
-| 기능                  | Method | URL              | Request                                                      | Response                                                     |
-| :-------------------- | :----- | :--------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
-| 회원가입              | POST   | /api/user/signup | {<br/>"username": "user1",<br/>"password": "password1"}      | {<br/>"status": "OK",<br/>"message": "회원가입 완료",<br/>"data": {<br/>"username": "username1",<br/> "posts": []<br/>}} |
-| 로그인                | POST   | /api/user/login  | {<br/>"username": "user1",<br/>"password": "password1"}      | {<br/>"status": "OK",<br/>"message": "로그인 완료",<br/>"data": {<br/>"username": "username1",<br/> "posts": []<br/>}} |
-| 전체 게시글 목록 조회 | GET    | /api/posts       | -                                                            | {<br/> { <br/>"author": "username2" <br/>"title": "title2", <br/>"content": "content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>}, <br/>{ <br/>"author": "username1" <br/>"title": "title1", <br/>"content": "content1", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>}, <br/>… <br/>} |
-| 선택한 게시글 조회    | GET    | /api/post/{id}   | JWT Token                                                    | { <br/>"author": "username2" <br/>"title": "title2", <br/>"content": "content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>} |
-| 게시글 작성           | POST   | /api/post        | JWT Token,<br/>{<br>"title" : "title", <br/>"content" : "content", <br/>} | { <br/>"author": "username2" <br/>"title": "title2", <br/>"content": "content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>} |
-| 선택한 게시글 수정    | PUT    | /api/post/{id}   | JWT Token,<br/>{<br/>"title" : "new title", <br/>"content" : "new content", <br/>} | { <br/>"author": "username2" <br/>"title": "new title2", <br/>"content": "new content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>} |
-| 선택한 게시글 삭제    | DELETE | /api/post/{id}   | JWT Token                                                    | {<br/>"status": "OK",<br/>"message": "삭제 완료",<br/>"data": 1<br/>} |
+| 기능                  | Method | URL                          | Request                                                      | Response                                                     |
+| :-------------------- | :----- | :--------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| 회원가입              | POST   | /api/user/signup             | {<br/>"username": "user1",<br/>"password": "password1"}      | {<br/>"username": "adrubi2",<br/>"role": "ADMIN"<br/>}       |
+| 로그인                | POST   | /api/user/login              | {<br/>"username": "user1",<br/>"password": "password1"}      | {<br/>"username": "adrubi2",<br/>"role": "ADMIN"<br/>}       |
+| 전체 게시글 목록 조회 | GET    | /api/posts                   | -                                                            | {<br/> { <br/>"id": 1,<br/>"author": "username2" <br/>"title": "title2", <br/>"content": "content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>"comments": [<br/>{ <br/>"id": 1,<br/>"author": "username2" <br/>"content": "content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>}, <br/>… <br/>]},<br/>{ <br/>"id": 1,<br/>"author": "username1" <br/>"title": "title1", <br/>"content": "content1", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/><br/>"comments": []<br/>}, <br/>… <br/>} |
+| 선택한 게시글 조회    | GET    | /api/post/{id}               | JWT Token                                                    | {<br/> { <br/>"id": 1,<br/>"author": "username2" <br/>"title": "title2", <br/>"content": "content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>"comments": [<br/>{ <br/>"id": 1,<br/>"author": "username2" <br/>"content": "content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>}, <br/>… <br/>]}<br/> |
+| 게시글 작성           | POST   | /api/post                    | JWT Token,<br/>{<br>"title" : "title", <br/>"content" : "content", <br/>} | { <br/>"id": 1,<br/>"author": "username2" <br/>"title": "title2", <br/>"content": "content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>} |
+| 선택한 게시글 수정    | PUT    | /api/post/{id}               | JWT Token,<br/>{<br/>"title" : "new title", <br/>"content" : "new content", <br/>} | { <br/>"id": 1,<br/>"author": "username2" <br/>"title": "new title2", <br/>"content": "new content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>"comments": [<br/>{ <br/>"id": 1,<br/>"author": "username2" <br/>"content": "content2", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”, <br/>}, <br/>… <br/>]} |
+| 선택한 게시글 삭제    | DELETE | /api/post/{id}               | JWT Token                                                    | 1(id return)                                                 |
+| 댓글 작성             | POST   | /api/comment?post_id={id}    | JWT Token,<br/>{<br/>content" : " content", <br/>}           | { <br/>"id": 1,<br/>"author": "username2" <br/>"content": "comment", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”<br/>} |
+| 선택한 댓글 수정      | PUT    | /api/comment?comment_id={id} | JWT Token,<br/>{<br/>content" : " new content", <br/>}       | { <br/>"id": 1,<br/>"author": "username2" <br/>"content": "new comment", <br/>"createdAt": "2022-07-25T12:43:01.226062”, <br/>"modifiedAt": "2022-07-25T12:43:01.226062”<br/>} |
+| 선택한 댓글 삭제      | DELETE | /api/comment?comment_id={id} | JWT Token                                                    | 1(id return)                                                 |
+| 예외처리              |        |                              |                                                              | { <br/>"timestamp": "2022-12-25T19:00:00.2527879" <br/>"status": 409, <br/>"error": "CONFLICT", <br/>"code": "DUPLICATE_USERNAME", <br/>"message": "중복된 username입니다." <br/>} |
 
 
 
@@ -69,49 +72,89 @@ Spring으로 로그인 기능이 추가된 블로그를 구현합니다.
 
 ## 📷 Result - POSTMAN
 
-### 회원가입
+### 회원가입 / 로그인
 
-![image-20221216093514045](README.assets/image-20221216093514045.png)
+> 회원가입 시, 사용자 이름, 권한 반환 / 로그인 시, 토큰도 함께 반환
 
-<br>
-
-### 로그인
-
-![image-20221216093528736](README.assets/image-20221216093528736.png)
+![image-20221221110426524](README.assets/image-20221221110426524.png)
 
 <br>
 
 ### 게시글 생성
 
-![image-20221216093313852](README.assets/image-20221216093313852.png)
+> 생성한 게시글 반환
+
+![image-20221221110622837](README.assets/image-20221221110622837.png)
+
+<br>
+
+### 댓글 생성
+
+> 생성한 댓글 반환
+
+![image-20221221110752444](README.assets/image-20221221110752444.png)
 
 <br>
 
 ### 모든 게시글 조회
 
-![image-20221216093336738](README.assets/image-20221216093336738.png)
+> 모든 게시글과 함께 각 게시글의 댓글도 함께 반환
+
+![image-20221221110926051](README.assets/image-20221221110926051.png)
 
 <br>
 
 ### 선택한 게시글 조회
 
-![image-20221216093355534](README.assets/image-20221216093355534.png)
+> 선택한 게시글과 함께 해당 게시글의 댓글도 함께 반환
+
+![image-20221225190209451](README.assets/image-20221225190209451.png)
+
+
 
 <br>
 
 ### 선택한 게시글 수정
 
-![image-20221216093425755](README.assets/image-20221216093425755.png)
+> 수정된 게시글 내용 반환
+
+![image-20221225190142340](README.assets/image-20221225190142340.png)
 
 <br>
 
 ### 선택한 게시글 삭제
 
-![image-20221216093234066](README.assets/image-20221216093234066.png)
+> 삭제된 게시글의 id값 반환
+
+![image-20221225190340411](README.assets/image-20221225190340411.png)
 
 
 
+<br>
 
+### 선택한 댓글 수정
+
+> 수정된 댓글 내용 반환
+
+![image-20221225190356372](README.assets/image-20221225190356372.png)
+
+<br>
+
+### 선택한 댓글 삭제
+
+> 삭제된 댓글의 id값 반환
+
+![image-20221225190332336](README.assets/image-20221225190332336.png)
+
+
+
+<br>
+
+### 예외처리
+
+> 해당 예외의 발생 시점, status, error code, message 반환
+
+![image-20221225190017174](README.assets/image-20221225190017174.png)
 
 <br>
 
@@ -157,7 +200,15 @@ Spring으로 로그인 기능이 추가된 블로그를 구현합니다.
 
 <br>
 
-**A6. IoC / DI 에 대해 간략하게 설명해주세요!**
+**A6. 5번과 같은 문제가 발생했을 때 JPA에서는 어떻게 해결할 수 있을까요?**
+
+=> `@OneToMany`의 어노테이션에 `cascade = CascadeType.REMOVE)` 조건을 추가합니다.
+
+
+
+<br>
+
+**A7. IoC / DI 에 대해 간략하게 설명해주세요!**
 
 => IoC : 제어의 역전, 메소드나 객체의 호출작업을 개발자가 결정하는 것이 아니라 외부에서 결정되는 것입니다. 객체의 의존성을 역전시켜서 객체 간의 결합도를 줄이고 유연한 코드를 작성할 수 있어 가독성, 코드 중복, 유지 보수를 편하게 할 수 있습니다.
 

@@ -28,8 +28,7 @@ public class PostResponseDto {
         this.content = post.getContent();
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
-        List<Comment> comments = post.getComments();
-        this.comments = comments
+        this.comments = post.getComments()
                 .stream()
                 .map(CommentResponseDto::new)
                 .collect(Collectors.toList());
